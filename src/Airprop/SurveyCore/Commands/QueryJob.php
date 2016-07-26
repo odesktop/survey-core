@@ -2,6 +2,7 @@
 
 use Config;
 use Illuminate\Console\Command;
+use Log;
 use Symfony\Component\Console\Input\InputArgument;
 
 class QueryJob extends Command {
@@ -40,26 +41,20 @@ class QueryJob extends Command {
 		$reportid = $this->argument('reportid');
 		$jobid    = $this->argument('jobid');
 
-		$json     = json_encode([
+		$data = [
 			'jobid'    => $jobid,
 			'reportid' => $reportid,
 			'command'  => 'queryjob',
-		]);
-
-		$header = [
-			'Content-Type: application/json',
 		];
 
-		$context = stream_context_create([
-			'http' => [
-				'method'  => 'POST',
-				'header'  => implode(PHP_EOL, $header),
-				'content' => $json,
-				'ignore_errors' => true,
-			],
-		]);
-		$response = file_get_contents(Config::get('app.url').'/api', false, $context);
-		$this->info(json_encode(json_decode($response), JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
+    $queryjob = new \Airprop\SurveyCore\Services\QueryJob($data);
+    try {
+      $response = $queryjob->run();
+      $this->info(json_encode($response, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
+    } catch (\Exception $e) {
+      Log::error($e->getTraceAsString(), ['message' => $e->getMessage()]);
+      $this->error($e->getMessage());
+    }
 	}
 
 	/**

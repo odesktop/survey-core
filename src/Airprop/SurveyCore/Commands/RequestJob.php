@@ -1,7 +1,9 @@
 <?php namespace Airprop\SurveyCore\Commands;
 
+use Airprop\SurveyCore\Services\AddJob;
 use Config;
 use Illuminate\Console\Command;
+use Log;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
@@ -45,7 +47,6 @@ class RequestJob extends Command {
 	public function fire()
 	{
     $json = $this->argument('json');
-    $endpoint = Config::get('app.url').'/api';
 
     $jsonFilePath = base_path('jobs/'.$json.'.json');
     if (!file_exists($jsonFilePath))
@@ -53,20 +54,16 @@ class RequestJob extends Command {
       $this->error($jsonFilePath.' not exists.');
       return -1;
     }
-    $header = [
-      'Content-Type: application/json',
-    ];
 
-    $context = stream_context_create([
-      'http' => [
-        'method'  => 'POST',
-        'header'  => implode(PHP_EOL, $header),
-        'content' => file_get_contents($jsonFilePath),
-        'ignore_errors' => true,
-      ],
-    ]);
-    $response = file_get_contents($endpoint, false, $context);
-    $this->info(json_encode(json_decode($response), JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
+    $data   = json_decode(file_get_contents($jsonFilePath), true);
+    $addjob = new AddJob($data);
+    try {
+      $response = $addjob->run();
+      $this->info(json_encode($response, JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
+    } catch (\Exception $e) {
+      Log::error($e->getTraceAsString(), ['message' => $e->getMessage()]);
+      $this->error($e->getMessage());
+    }
 	}
 
 	/**
