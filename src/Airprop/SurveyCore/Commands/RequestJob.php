@@ -1,10 +1,16 @@
-<?php namespace Airprop\SurveyCore;
+<?php namespace Airprop\SurveyCore\Commands;
 
 use Config;
 use Illuminate\Console\Command;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
+/**
+ * ジョブリクエストのテスト
+ * /jobs/job1.json等を事前に用意しておく
+ *
+ * Class RequestJob
+ * @package Airprop\SurveyCore
+ */
 class RequestJob extends Command {
 
 	/**
@@ -38,7 +44,8 @@ class RequestJob extends Command {
 	 */
 	public function fire()
 	{
-    $json       = $this->argument('json');
+    $json = $this->argument('json');
+    $endpoint = Config::get('app.url').'/api';
 
     $jsonFilePath = base_path('jobs/'.$json.'.json');
     if (!file_exists($jsonFilePath))
@@ -58,7 +65,7 @@ class RequestJob extends Command {
         'ignore_errors' => true,
       ],
     ]);
-    $response = file_get_contents(Config::get('app.url').'/api', false, $context);
+    $response = file_get_contents($endpoint, false, $context);
     $this->info(json_encode(json_decode($response), JSON_PRETTY_PRINT|JSON_UNESCAPED_UNICODE));
 	}
 
@@ -70,7 +77,7 @@ class RequestJob extends Command {
 	protected function getArguments()
 	{
 		return array(
-      array('json', InputArgument::REQUIRED, 'json file name in /jobs.'),
+      array('json', InputArgument::REQUIRED, 'json file name in the jobs directory.'),
 		);
 	}
 
@@ -81,8 +88,7 @@ class RequestJob extends Command {
 	 */
 	protected function getOptions()
 	{
-		return array(
-		);
+		return array();
 	}
 
 }

@@ -1,5 +1,8 @@
 <?php namespace Airprop\SurveyCore;
 
+use Airprop\SurveyCore\Commands\ClearJob;
+use Airprop\SurveyCore\Commands\QueryJob;
+use Airprop\SurveyCore\Commands\RequestJob;
 use Illuminate\Support\ServiceProvider;
 
 class SurveyCoreServiceProvider extends ServiceProvider {
@@ -19,11 +22,19 @@ class SurveyCoreServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		$this->package('airprop/survey-core');
-    $this->app->bind('airprop::command.request.job', function ($app) {
+    $this->app->bind('airprop::command.job.request', function ($app) {
       return new RequestJob();
     });
+    $this->app->bind('airprop::command.job.query', function ($app) {
+      return new QueryJob();
+    });
+    $this->app->bind('airprop::command.job.clear', function ($app) {
+      return new ClearJob();
+    });
     $this->commands([
-      'airprop::command.request.job',
+      'airprop::command.job.request',
+      'airprop::command.job.query',
+      'airprop::command.job.clear',
     ]);
 	}
 
