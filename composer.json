@@ -1,0 +1,23 @@
+{
+    "name": "airprop/survey-core",
+    "description": "",
+    "authors": [
+        {
+            "name": "kawai",
+            "email": "kawai@primalbase.jp"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "illuminate/support": "4.2.*"
+    },
+    "autoload": {
+        "classmap": [
+            "src/migrations"
+        ],
+        "psr-0": {
+            "Airprop\\SurveyCore\\": "src/"
+        }
+    },
+    "minimum-stability": "stable"
+}
