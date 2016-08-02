@@ -1,6 +1,8 @@
 <?php namespace Airprop\SurveyCore;
 
+use Airprop\SurveyCore\Commands\CallTask;
 use Airprop\SurveyCore\Commands\ClearJob;
+use Airprop\SurveyCore\Commands\LoadJson;
 use Airprop\SurveyCore\Commands\QueryJob;
 use Airprop\SurveyCore\Commands\RequestJob;
 use Illuminate\Support\ServiceProvider;
@@ -31,12 +33,40 @@ class SurveyCoreServiceProvider extends ServiceProvider {
     $this->app->bind('airprop::command.job.clear', function ($app) {
       return new ClearJob();
     });
+    $this->app->bind('airprop::command.task.call', function ($app) {
+      return new CallTask();
+    });
+    $this->app->bind('airprop::command.json.load', function ($app) {
+      return new LoadJson();
+    });
+    $this->app->bind('TaskRegistration', function ($app) {
+      return $this->resolver('TaskRegistration');
+    });
     $this->commands([
       'airprop::command.job.request',
       'airprop::command.job.query',
       'airprop::command.job.clear',
+      'airprop::command.task.call',
+      'airprop::command.json.load',
     ]);
 	}
+
+	protected function resolver($class)
+  {
+    if (!class_exists($class))
+    {
+      $class = 'Tasks\\'.$class;
+    }
+    if (!class_exists($class))
+    {
+      $class = 'Airprop\\SurveyCore\\'.$class;
+    }
+    if (!class_exists($class))
+    {
+      $class = null;
+    }
+    return $class;
+  }
 
 	/**
 	 * Register the service provider.

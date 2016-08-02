@@ -48,10 +48,4 @@ class JobBase
   {
     return $this->job;
   }
-
-  protected function reportAccepts($reportid)
-  {
-    $reports = array_pluck(Config::get('app.reports', []), 'name');
-    return in_array($reportid, $reports);
-  }
 }

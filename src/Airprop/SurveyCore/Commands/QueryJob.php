@@ -38,12 +38,10 @@ class QueryJob extends Command {
 	 */
 	public function fire()
 	{
-		$reportid = $this->argument('reportid');
-		$jobid    = $this->argument('jobid');
+		$jobid = $this->argument('jobid');
 
 		$data = [
 			'jobid'    => $jobid,
-			'reportid' => $reportid,
 			'command'  => 'queryjob',
 		];
 
@@ -65,7 +63,6 @@ class QueryJob extends Command {
 	protected function getArguments()
 	{
 		return array(
-			array('reportid', InputArgument::REQUIRED, 'reportid.'),
 			array('jobid', InputArgument::REQUIRED, 'manaba_jobid.'),
 		);
 	}

@@ -1,7 +1,10 @@
 <?php namespace Airprop\SurveyCore\Services;
 
+use Airprop\SurveyCore\Tasks\TaskRegistration;
+use Artisan;
 use DB;
 use Exception;
+use File;
 use Job;
 use Session;
 use TaskManager;
@@ -15,11 +18,6 @@ class AddJob extends JobBase
     if ($this->validator->fails())
     {
       throw new Exception($this->validator->messages()->first());
-    }
-
-    if (!$this->reportAccepts($data['reportid']))
-    {
-      throw new Exception('Invalid reportid');
     }
 
     // 同一のjobidは不許可
@@ -60,9 +58,17 @@ class AddJob extends JobBase
     {
       // JSON取得から開始する場合は
       // JSON取得タスクを作成し、キューに登録する
+      // JSONファイルはstorage/json/{jobid}に保存する
+      $jsonDir = storage_path('json/'.$data['jobid']);
+      File::cleanDirectory($jsonDir);
+      File::makeDirectory($jsonDir, 2775, true, true);
       foreach ($data['data_url'] as $meta)
-        $urls[] = $meta['url'];
-      $firstTask = TaskManager::taskGetJson($data['reportid'], $data['jobid'], $urls);
+      {
+        file_put_contents($jsonDir.'/'.basename($meta['url']), file_get_contents($meta['url']));
+      }
+
+//      $firstTask = TaskManager::taskGetJson($data['reportid'], $data['jobid'], $urls);
+      $firstTask = TaskRegistration::task($data['jobid']);
       TaskManager::taskRegisterTask($data['reportid'], $data['jobid'], $taskName);
     }
     else

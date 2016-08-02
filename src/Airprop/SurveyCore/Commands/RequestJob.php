@@ -46,6 +46,7 @@ class RequestJob extends Command {
 	 */
 	public function fire()
 	{
+
     $json = $this->argument('json');
 
     $jsonFilePath = base_path('jobs/'.$json.'.json');

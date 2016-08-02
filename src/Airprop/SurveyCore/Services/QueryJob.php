@@ -44,7 +44,7 @@ class QueryJob extends JobBase
 
     $this->progress = Task::query()
       ->where('manaba_jobid', $data['jobid'])
-      ->sum('current');
+      ->sum('progress');
 
     $this->total = Task::query()
       ->where('manaba_jobid', $data['jobid'])
