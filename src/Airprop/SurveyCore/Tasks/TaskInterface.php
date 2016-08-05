@@ -16,7 +16,7 @@ interface TaskInterface
    * @param array $options
    * @return Task
    */
-  public static function task($jobid, $options = []);
+  public static function make($jobid, $options = []);
 
   /**
    * キューに追加

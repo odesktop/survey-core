@@ -23,7 +23,7 @@ class CallTask extends Command {
       $this->error('有効なクラス名を指定してください');
       return;
     }
-    $task = $class::task($jobid);
+    $task = $class::make($jobid);
     $task->call();
 	}
 

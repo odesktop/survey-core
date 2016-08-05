@@ -19,7 +19,7 @@ class TaskSummaryOrganization implements TaskInterface
    * @return Task
    * @throws Exception
    */
-  public static function task($jobid, $options = [])
+  public static function make($jobid, $options = [])
   {
     $entries = Organization::query()
       ->where('manaba_jobid', $jobid)

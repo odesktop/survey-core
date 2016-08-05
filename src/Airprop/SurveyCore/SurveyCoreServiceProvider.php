@@ -14,7 +14,19 @@ class SurveyCoreServiceProvider extends ServiceProvider {
 	 *
 	 * @var bool
 	 */
-	protected $defer = false;
+	protected $defer = true;
+
+  protected $registerTasks = [
+    'TaskRegistration',
+    'TaskSummaryOverall',
+    'TaskSummaryOrganization',
+    'TaskSummaryCourse',
+    'TaskPdfOverall',
+    'TaskPdfCourse',
+    'TaskZipOverall',
+    'TaskZipOrganization',
+    'TaskZipCourse',
+  ];
 
 	/**
 	 * Bootstrap the application events.
@@ -39,9 +51,12 @@ class SurveyCoreServiceProvider extends ServiceProvider {
     $this->app->bind('airprop::command.json.load', function ($app) {
       return new LoadJson();
     });
-    $this->app->bind('TaskRegistration', function ($app) {
-      return $this->resolver('TaskRegistration');
-    });
+    foreach ($this->registerTasks as $task)
+    {
+      $this->app->bind($task, function ($app) use ($task) {
+        return $this->resolver($task);
+      });
+    }
     $this->commands([
       'airprop::command.job.request',
       'airprop::command.job.query',
@@ -65,7 +80,7 @@ class SurveyCoreServiceProvider extends ServiceProvider {
     {
       $class = null;
     }
-    return $class;
+    return new $class;
   }
 
 	/**

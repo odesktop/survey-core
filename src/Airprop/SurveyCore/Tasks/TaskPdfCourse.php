@@ -1,39 +1,44 @@
 <?php namespace Airprop\SurveyCore\Tasks;
 
 use Carbon\Carbon;
-use Config;
+use Course;
 use Exception;
 use File;
 use Log;
-use Organization;
 use Queue;
-use Survey;
 use Task;
 
 /**
- * Class TaskPdfOverall
+ * 科目別PDF
+ * Class TaskPdfCourse
  * @package Airprop\SurveyCore\Tasks
- * @todo jissenではa1,a4に紐付いていたが今回はないので修正が必要
+ * @todo テスト
  */
-class TaskPdfOverall implements TaskInterface
+class TaskPdfCourse implements TaskInterface
 {
+
   /**
    * タスクを作成
    * @param $jobid
-   * @throws Exception
+   * @param array $options
    * @return Task
    */
   public static function make($jobid, $options = [])
   {
+    $entries = Course::query()
+      ->where('manaba_jobid', $jobid)
+      ->lists('oid');
+
     $task = Task::create([
       'manaba_jobid' => $jobid,
-      'name'         => 'all-pdf-total',
-      'label'        => '全体のPDF',
+      'name'         => 'all-pdf-course',
+      'label'        => '科目別のPDF',
       'callback'     => __CLASS__.'::push',
       'callback_params' => serialize([
         'jobid'   => $jobid,
+        'entries' => $entries,
       ]),
-      'total'        => 1,
+      'total'        => count($entries),
     ]);
 
     return $task;
@@ -47,14 +52,19 @@ class TaskPdfOverall implements TaskInterface
   {
     $params  = unserialize($task->callback_params);
     $jobid   = array_get($params, 'jobid');
+    $entries = array_get($params, 'entries');
 
-    Queue::push('TaskRunner', [
-      'taskid'   => $task->id,
-      'callback' => __CLASS__.'::run',
-      'params'   => [
-        'jobid'   => $jobid,
-      ],
-    ]);
+    foreach ($entries as $oid)
+    {
+      Queue::push('TaskRunner', [
+        'taskid' => $task->id,
+        'callback' => __CLASS__.'::run',
+        'params' => [
+          'jobid'  => $jobid,
+          'course' => $oid,
+        ],
+      ]);
+    }
 
     $task->update([
       'pushed_at' => Carbon::now(),
@@ -65,26 +75,32 @@ class TaskPdfOverall implements TaskInterface
    * 実行
    * @param $queue_job
    * @param $params
-   * @todo pdfの生成先ディレクトリ決定、PDF用のViewを更新
+   * @todo テスト
    */
   public static function run($queue_job, $params)
   {
-    $jobid   = array_get($params, 'jobid');
-
     try {
-      $survey = Survey::query()
-        ->where('manaba_jobid', $jobid)
-        ->first();
-      if (!$survey)
-        throw new Exception('存在しないアンケート surveys.manaba_jobid = '.$jobid);
+      $jobid = $params['jobid'];
+      $oid   = $params['course'];
 
-      $directory = $organization->pdfDir();
+      /** @var Course $course */
+      $course = Course::query()
+        ->where('manaba_jobid', $jobid)
+        ->where('oid', $oid)
+        ->first();
+
+      if (!$course)
+      {
+        throw new Exception('存在しないコース manaba_jobid = '.$jobid.' courses.oid = '.$oid);
+      }
+
+      $directory = $course->pdfDir();
       if (!File::exists($directory))
         File::makeDirectory($directory, 02775, true, true);
 
-      $url      = route('summary.org', [$organization->id]);
-      $filename = $directory.'/'.$orgcode.'.pdf';
-      $command = wkhtmltopdf($url, $filename);
+      $url      = route('course.summary', [$course->id]);
+      $filename = $directory.'/'.$oid.'.pdf';
+      $command = static::savePdfCommand($url, $filename);
       queue_log($queue_job, 'GENPDF', '%s', [$command]);
       system($command);
     } catch (Exception $e) {

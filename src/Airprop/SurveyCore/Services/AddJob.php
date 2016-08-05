@@ -1,7 +1,6 @@
 <?php namespace Airprop\SurveyCore\Services;
 
 use Airprop\SurveyCore\Tasks\TaskRegistration;
-use Artisan;
 use DB;
 use Exception;
 use File;
@@ -61,14 +60,14 @@ class AddJob extends JobBase
       // JSONファイルはstorage/json/{jobid}に保存する
       $jsonDir = storage_path('json/'.$data['jobid']);
       File::cleanDirectory($jsonDir);
-      File::makeDirectory($jsonDir, 2775, true, true);
+      File::makeDirectory($jsonDir, 02775, true, true);
       foreach ($data['data_url'] as $meta)
       {
         file_put_contents($jsonDir.'/'.basename($meta['url']), file_get_contents($meta['url']));
       }
 
 //      $firstTask = TaskManager::taskGetJson($data['reportid'], $data['jobid'], $urls);
-      $firstTask = TaskRegistration::task($data['jobid']);
+      $firstTask = TaskRegistration::make($data['jobid']);
       TaskManager::taskRegisterTask($data['reportid'], $data['jobid'], $taskName);
     }
     else

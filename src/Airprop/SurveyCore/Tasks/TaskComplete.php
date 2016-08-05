@@ -1,28 +1,24 @@
 <?php namespace Airprop\SurveyCore\Tasks;
 
 use Carbon\Carbon;
-use File;
 use Queue;
-use SummaryCalculator;
 use Task;
 
-/**
- * 全体
- * Class TaskOverall
- * @package Tasks
- */
-class TaskSummaryOverall implements TaskInterface
+class TaskComplete implements TaskInterface
 {
+
   /**
+   * タスクを作成
    * @param $jobid
+   * @param array $options
    * @return Task
    */
   public static function make($jobid, $options = [])
   {
     $task = Task::create([
       'manaba_jobid' => $jobid,
-      'name'         => 'summary-overall',
-      'label'        => '全体の集計',
+      'name'         => 'complete',
+      'label'        => 'すべての処理が完了',
       'callback'     => __CLASS__.'::push',
       'callback_params' => serialize([
         'jobid'   => $jobid,
@@ -33,16 +29,15 @@ class TaskSummaryOverall implements TaskInterface
     return $task;
   }
 
+  /**
+   * キューに追加
+   * @param Task $task
+   */
   public static function push(Task $task)
   {
-    task_log($task, 'PUSH', '%s', [__CLASS__]);
-
     $params  = unserialize($task->callback_params);
 
     $jobid   = array_get($params, 'jobid');
-
-    // PDFディレクトリをクリア
-    File::cleanDirectory(public_path('pdf/'.$jobid));
 
     Queue::push('TaskRunner', [
       'taskid'   => $task->id,
@@ -58,19 +53,13 @@ class TaskSummaryOverall implements TaskInterface
   }
 
   /**
-   * 集計
+   * 実行
    * @param $queue_job
    * @param $params
+   * @return bool
    */
   public static function run($queue_job, $params)
   {
-    $jobid   = array_get($params, 'jobid');
-
-    $calc = new SummaryCalculator;
-    $calc->setJobid($jobid);
-
-    queue_log($queue_job, 'JOB', 'jobid=%s', [$params['jobid']]);
-    $calc->run();
+    return true;
   }
-
 }

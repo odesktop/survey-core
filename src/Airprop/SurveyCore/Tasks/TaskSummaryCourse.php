@@ -20,7 +20,7 @@ class TaskSummaryCourse implements TaskInterface
    * @return Task
    * @throws Exception
    */
-  public static function task($jobid, $options = [])
+  public static function make($jobid, $options = [])
   {
     $entries = Course::query()
       ->where('manaba_jobid', $jobid)

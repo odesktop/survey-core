@@ -14,7 +14,7 @@ class TaskRegistration implements TaskInterface
    * @param array $options
    * @return Task
    */
-  public static function task($jobid, $options = [])
+  public static function make($jobid, $options = [])
   {
     $entries = glob(storage_path('json/'.$jobid.'/*.json'));
     $total = count($entries);
