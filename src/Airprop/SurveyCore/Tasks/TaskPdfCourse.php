@@ -103,7 +103,7 @@ class TaskPdfCourse implements TaskInterface
       if (!File::exists($directory))
         File::makeDirectory($directory, 02775, true, true);
 
-      $url      = route('course.summary', [$course->id]);
+      $url      = route('course.summary', [$course->manaba_jobid, $course->id]);
       $filename = $directory.'/'.$oid.'.pdf';
       $command = static::savePdfCommand($url, $filename);
       queue_log($queue_job, 'GENPDF', '%s', [$command]);
