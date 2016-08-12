@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use Course;
 use Exception;
 use File;
+use Job;
 use Log;
 use Queue;
 use Task;
@@ -25,6 +26,10 @@ class TaskPdfCourse implements TaskInterface
    */
   public static function make($jobid, $options = [])
   {
+    Job::firstOrCreate([
+      'manaba_jobid' => $jobid,
+    ]);
+
     $entries = Course::query()
       ->where('manaba_jobid', $jobid)
       ->lists('oid');

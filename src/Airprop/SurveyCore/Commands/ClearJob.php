@@ -38,15 +38,12 @@ class ClearJob extends Command {
 	 */
 	public function fire()
 	{
-    $reportid = $this->argument('reportid');
 		$jobid    = $this->argument('jobid');
-
-    // @todo ここで接続先DBを決定
 
     Job::where('manaba_jobid', $jobid)->delete();
     $this->info('jobsテーブルから'.$jobid.'を削除しました');
-    Task::where('reportid', $reportid)->where('manaba_jobid', $jobid)->delete();
-    $this->info('tasksテーブルから'.$reportid.'/'.$jobid.'を削除しました');
+    Task::where('manaba_jobid', $jobid)->delete();
+    $this->info('tasksテーブルから'.$jobid.'を削除しました');
 	}
 
 	/**
@@ -57,7 +54,6 @@ class ClearJob extends Command {
 	protected function getArguments()
 	{
 		return array(
-			array('reportid', InputArgument::REQUIRED, 'reportid.'),
 			array('jobid', InputArgument::REQUIRED, 'manaba_jobid.'),
 		);
 	}

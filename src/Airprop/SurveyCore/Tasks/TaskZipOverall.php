@@ -1,5 +1,6 @@
 <?php namespace Airprop\SurveyCore\Tasks;
 
+use Job;
 use Task;
 
 class TaskZipOverall implements TaskInterface
@@ -14,6 +15,10 @@ class TaskZipOverall implements TaskInterface
   public static function make($jobid, $options = [])
   {
     // TODO: Implement task() method.
+    Job::firstOrCreate([
+      'manaba_jobid' => $jobid,
+    ]);
+
   }
 
   /**

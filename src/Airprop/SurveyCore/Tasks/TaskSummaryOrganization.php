@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use Exception;
+use Job;
 use Organization;
 use Queue;
 use SummaryCalculator;
@@ -21,6 +22,10 @@ class TaskSummaryOrganization implements TaskInterface
    */
   public static function make($jobid, $options = [])
   {
+    Job::firstOrCreate([
+      'manaba_jobid' => $jobid,
+    ]);
+
     $entries = Organization::query()
       ->where('manaba_jobid', $jobid)
       ->lists('code');

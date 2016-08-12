@@ -4,6 +4,7 @@ use Carbon\Carbon;
 use Config;
 use Exception;
 use File;
+use Job;
 use Log;
 use Organization;
 use Queue;
@@ -25,6 +26,10 @@ class TaskPdfOverall implements TaskInterface
    */
   public static function make($jobid, $options = [])
   {
+    Job::firstOrCreate([
+      'manaba_jobid' => $jobid,
+    ]);
+
     $task = Task::create([
       'manaba_jobid' => $jobid,
       'name'         => 'all-pdf-total',

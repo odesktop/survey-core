@@ -3,6 +3,7 @@
 use Carbon\Carbon;
 use Course;
 use Exception;
+use Job;
 use Queue;
 use SummaryCalculator;
 use Task;
@@ -22,6 +23,10 @@ class TaskSummaryCourse implements TaskInterface
    */
   public static function make($jobid, $options = [])
   {
+    Job::firstOrCreate([
+      'manaba_jobid' => $jobid,
+    ]);
+
     $entries = Course::query()
       ->where('manaba_jobid', $jobid)
       ->lists('oid');

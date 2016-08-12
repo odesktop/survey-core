@@ -14,7 +14,7 @@ class SurveyCoreServiceProvider extends ServiceProvider {
 	 *
 	 * @var bool
 	 */
-	protected $defer = true;
+	protected $defer = false;
 
   protected $registerTasks = [
     'TaskRegistration',
@@ -36,6 +36,32 @@ class SurveyCoreServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		$this->package('airprop/survey-core');
+  }
+
+	protected function resolver($class)
+  {
+    if (!class_exists($class))
+    {
+      $class = 'Tasks\\'.$class;
+    }
+    if (!class_exists($class))
+    {
+      $class = 'Airprop\\SurveyCore\\'.$class;
+    }
+    if (!class_exists($class))
+    {
+      $class = null;
+    }
+    return new $class;
+  }
+
+	/**
+	 * Register the service provider.
+	 *
+	 * @return void
+	 */
+	public function register()
+	{
     $this->app->bind('airprop::command.job.request', function ($app) {
       return new RequestJob();
     });
@@ -64,33 +90,6 @@ class SurveyCoreServiceProvider extends ServiceProvider {
       'airprop::command.task.call',
       'airprop::command.json.load',
     ]);
-	}
-
-	protected function resolver($class)
-  {
-    if (!class_exists($class))
-    {
-      $class = 'Tasks\\'.$class;
-    }
-    if (!class_exists($class))
-    {
-      $class = 'Airprop\\SurveyCore\\'.$class;
-    }
-    if (!class_exists($class))
-    {
-      $class = null;
-    }
-    return new $class;
-  }
-
-	/**
-	 * Register the service provider.
-	 *
-	 * @return void
-	 */
-	public function register()
-	{
-		//
 	}
 
 	/**

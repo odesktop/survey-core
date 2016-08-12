@@ -1,5 +1,6 @@
 <?php namespace Airprop\SurveyCore\Controllers\Report;
 
+use Job;
 use Report\LayoutViewModel;
 use Report\SurveyViewModel;
 use Route;
@@ -11,10 +12,16 @@ class SurveyController extends BaseController
 
   public static function routing()
   {
-    Route::get('job/{job}/survey', [
-      'as'   => 'survey',
-      'uses' => __CLASS__.'@index',
+    Route::get('report/{manaba_jobid}/survey', [
+    'as'   => 'survey',
+    'uses' => __CLASS__.'@index',
     ]);
+
+    Route::get('report/{manaba_jobid}/summary/overall', [
+      'as'   => 'survey-core::summary.overall.show',
+      'uses' => __CLASS__.'@show',
+    ]);
+
   }
 
   /**
@@ -25,7 +32,7 @@ class SurveyController extends BaseController
     return app('Report\SurveyViewModel');
   }
 
-  public function index($job)
+  public function index(Job $job)
   {
     $layoutViewModel = new LayoutViewModel;
     $layoutViewModel->setStatus($job->status);
@@ -37,7 +44,7 @@ class SurveyController extends BaseController
     $topLevelViewModel = app('TopLevelViewModel');
     $topLevelViewModel->setJob($job);
 
-    $this->setView('survey.index', [
+    $this->setView('survey-core::report.survey.index', [
       'job'       => $job,
       'viewModel' => $viewModel,
       'topLevelViewModel' => $topLevelViewModel,
@@ -45,25 +52,15 @@ class SurveyController extends BaseController
   }
 
 
-  public function summary(SurveyOrganization $organization)
+  public function show(Job $job)
   {
-    if (Config::get('app.debug'))
-    {
-      Debugbar::disable();
-    }
-
     $this->layout = View::make('print');
 
-    /** @var Survey\CrossSummaryViewModel $crossViewModel */
-    $crossViewModel = app('Survey\CrossSummaryViewModel');
-    $crossViewModel->setOrganization($organization);
-
-    /** @var Survey\SummaryViewModel $viewModel */
+    /** @var \Survey\SummaryViewModel $viewModel */
     $viewModel = app('Survey\SummaryViewModel');
-    $viewModel->setOrganization($organization);
+    $viewModel->setModel($job->surveys()->first());
 
     $this->setView('survey.summary', [
-      'crossViewModel' => $crossViewModel,
       'viewModel' => $viewModel,
     ]);
   }

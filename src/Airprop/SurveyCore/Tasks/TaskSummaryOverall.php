@@ -2,6 +2,7 @@
 
 use Carbon\Carbon;
 use File;
+use Job;
 use Queue;
 use SummaryCalculator;
 use Task;
@@ -15,10 +16,15 @@ class TaskSummaryOverall implements TaskInterface
 {
   /**
    * @param $jobid
+   * @param array $options
    * @return Task
    */
   public static function make($jobid, $options = [])
   {
+    Job::firstOrCreate([
+      'manaba_jobid' => $jobid,
+    ]);
+
     $task = Task::create([
       'manaba_jobid' => $jobid,
       'name'         => 'summary-overall',

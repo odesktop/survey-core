@@ -1,6 +1,7 @@
 <?php namespace Airprop\SurveyCore\Tasks;
 
 use Carbon\Carbon;
+use Job;
 use Queue;
 use Task;
 
@@ -15,6 +16,10 @@ class TaskComplete implements TaskInterface
    */
   public static function make($jobid, $options = [])
   {
+    Job::firstOrCreate([
+      'manaba_jobid' => $jobid,
+    ]);
+
     $task = Task::create([
       'manaba_jobid' => $jobid,
       'name'         => 'complete',
