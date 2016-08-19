@@ -47,7 +47,10 @@ class AddJob extends JobBase
     $this->job = $job;
 
     // PDFメタデータを保存
-    $job->saveMetaFile($data['metadata']['url']);
+    foreach ($data['metadata_url'] as $url)
+    {
+      $job->saveMetaFile($url);
+    }
 
     $taskName = array_get($data, 'task', 'load-json');
     if ($taskName == 'load-json')
