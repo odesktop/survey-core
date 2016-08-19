@@ -35,6 +35,10 @@ class AddJob extends JobBase
       throw new Exception('Now loading. Please wait and retry');
     }
 
+    // storage/jobsに保存
+    $logFilePath = storage_path(sprintf('jobs/%s.json', $data['jobid']));
+    file_put_contents($logFilePath, json_encode($data, JSON_UNESCAPED_SLASHES|JSON_UNESCAPED_UNICODE));
+
     $this->jobid = $data['jobid'];
     $this->reportid = $data['reportid'];
 
@@ -45,12 +49,6 @@ class AddJob extends JobBase
       'current_step' => 'load-json',
     ]);
     $this->job = $job;
-
-    // PDFメタデータを保存
-    foreach ($data['metadata_url'] as $url)
-    {
-      $job->saveMetaFile($url);
-    }
 
     $taskName = array_get($data, 'task', 'load-json');
     if ($taskName == 'load-json')
