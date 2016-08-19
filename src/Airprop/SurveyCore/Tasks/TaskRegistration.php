@@ -91,6 +91,7 @@ class TaskRegistration implements TaskInterface
     $task = Task::find($taskid);
 
     $manager = new SurveyManager;
+    $manager->clear();
     foreach ($entries as $i => $jsonPath)
     {
       $progress = $i+1;
