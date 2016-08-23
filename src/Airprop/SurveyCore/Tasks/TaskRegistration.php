@@ -35,7 +35,7 @@ class TaskRegistration implements TaskInterface
 
     foreach ($data['data_url'] as $meta)
     {
-      file_put_contents($jsonDir.'/'.basename($meta['url']), file_get_contents($meta['url']));
+      file_put_contents($jsonDir.'/'.$meta['seqno'].'_'.basename($meta['url']), file_get_contents($meta['url']));
     }
 
     $entries = glob(storage_path('json/'.$jobid.'/*.json'));
@@ -91,6 +91,7 @@ class TaskRegistration implements TaskInterface
     $task = Task::find($taskid);
 
     $manager = new SurveyManager;
+    $manager->clear($task->manaba_jobid);
     foreach ($entries as $i => $jsonPath)
     {
       $progress = $i+1;
