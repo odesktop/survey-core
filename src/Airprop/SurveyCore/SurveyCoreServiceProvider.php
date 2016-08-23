@@ -23,9 +23,11 @@ class SurveyCoreServiceProvider extends ServiceProvider {
     'TaskSummaryCourse',
     'TaskPdfOverall',
     'TaskPdfCourse',
+    'TaskPdfCourseList',
     'TaskZipOverall',
     'TaskZipOrganization',
     'TaskZipCourse',
+    'TaskZipCourseList',
   ];
 
 	/**

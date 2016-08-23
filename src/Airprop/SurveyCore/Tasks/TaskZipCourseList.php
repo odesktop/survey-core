@@ -1,7 +1,6 @@
 <?php namespace Airprop\SurveyCore\Tasks;
 
 use Carbon\Carbon;
-use Course;
 use Exception;
 use File;
 use Job;
@@ -10,7 +9,7 @@ use Queue;
 use Task;
 use ZipArchive;
 
-class TaskZipCourse implements TaskInterface
+class TaskZipCourseList implements TaskInterface
 {
 
   /**
@@ -27,8 +26,8 @@ class TaskZipCourse implements TaskInterface
 
     $task = Task::create([
       'manaba_jobid' => $jobid,
-      'name'         => 'zip-course',
-      'label'        => '科目別の分析ZIPファイル',
+      'name'         => 'zip-course-list',
+      'label'        => '科目別の分析一覧ZIPファイル',
       'callback'     => __CLASS__.'::push',
       'callback_params' => serialize([
         'jobid' => $jobid,
@@ -74,41 +73,17 @@ class TaskZipCourse implements TaskInterface
       /** @var Job $job */
       $job = Job::where('manaba_jobid', $jobid)->first();
 
-      $outputFilePath = $job->zipFilePath('course');
+      $outputFilePath = $job->zipFilePath('course-list');
       $zip = static::zip($outputFilePath);
       queue_log($queue_job, 'ZIP', '%sを作成', [$outputFilePath]);
 
-      // メタ情報を追加
-      $jobJsonPath = storage_path('jobs/'.$jobid.'.json');
-      queue_log($queue_job, 'METADATA', '%sをロード', [$jobJsonPath]);
-      $json = json_decode(file_get_contents($jobJsonPath), true);
-      $metadata = array_get($json, 'metadata');
-      $url = array_get($metadata, 'url');
-      queue_log($queue_job, 'METADATA', '%sをロード', [$url]);
-      $metadataJson = json_decode(file_get_contents($url), true);
-      if (array_get($metadataJson, 'status') != 'ok')
+      $pdfFilePath = $job->pdfDir('course-list.pdf');
+      if (!File::exists($pdfFilePath))
       {
-        throw new Exception('metadata status is not ok.');
+        queue_log($queue_job, 'ERROR', '%sは生成されていません', [$pdfFilePath]);
+        return;
       }
-      $filename = array_get($metadataJson, 'filename');
-      $content  = array_get($metadataJson, 'filecontent');
-      $zip->addFromString($filename, $content);
-
-      $entries = Course::where('manaba_jobid', $jobid)->get();
-      foreach ($entries as $course)
-      {
-        if (!File::exists($course->pdfFilePath()))
-        {
-          queue_log($queue_job, 'ERROR', '%sは生成されていません', [$course->pdfFilePath()]);
-          continue;
-        }
-
-        $dirname  = sprintf('%s-%s-%s', $course->coursecode, $course->year, $course->term);
-        $filename = $course->nameloc.'.pdf';
-        queue_log($queue_job, 'ZIP', '%sを追加', [$filename]);
-        $filename = mb_convert_encoding($filename, 'cp932', 'UTF-8');
-        $zip->addFile($course->pdfFilePath(), $dirname.'/'.$filename);
-      }
+      $zip->addFile($pdfFilePath, 'course-list.pdf');
       $zip->close();
     } catch (Exception $e) {
       queue_log($queue_job, 'ERROR', $e->getMessage(), '');

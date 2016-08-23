@@ -13,7 +13,6 @@ use Task;
  * 科目別PDF
  * Class TaskPdfCourse
  * @package Airprop\SurveyCore\Tasks
- * @todo テスト
  */
 class TaskPdfCourse implements TaskInterface
 {
@@ -80,7 +79,6 @@ class TaskPdfCourse implements TaskInterface
    * 実行
    * @param $queue_job
    * @param $params
-   * @todo テスト
    */
   public static function run($queue_job, $params)
   {
@@ -112,5 +110,13 @@ class TaskPdfCourse implements TaskInterface
       queue_log($queue_job, 'ERROR', $e->getMessage(), '');
       Log::error($e->getTraceAsString(), ['context' => $e->getMessage()]);
     }
+  }
+
+  protected static function savePdfCommand($url, $filename)
+  {
+    return sprintf('wkhtmltopdf --username manaba --password survey -T 7 -L 10 -B 0 -R 4 --disable-smart-shrinking %s %s > /dev/null 2>&1',
+      $url,
+      $filename
+    );
   }
 }
