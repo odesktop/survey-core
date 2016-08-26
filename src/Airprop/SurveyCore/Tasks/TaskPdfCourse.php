@@ -114,7 +114,9 @@ class TaskPdfCourse implements TaskInterface
 
   protected static function savePdfCommand($url, $filename)
   {
-    return sprintf('wkhtmltopdf --username manaba --password survey -T 7 -L 10 -B 0 -R 4 --disable-smart-shrinking %s %s > /dev/null 2>&1',
+    $command = Config::get('survey-core::survey-core.wkhtmltopdf');
+    return sprintf('%s %s %s > /dev/null 2>&1',
+      $command,
       $url,
       $filename
     );
