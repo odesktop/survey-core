@@ -1,6 +1,7 @@
 <?php namespace Airprop\SurveyCore\Tasks;
 
 use Carbon\Carbon;
+use Config;
 use Course;
 use Exception;
 use File;
