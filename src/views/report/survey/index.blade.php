@@ -23,17 +23,6 @@
     </tr>
     <tr>
       <td>
-        {{ link_to_route('pdf.total.makeall', '全体のPDFを生成', ['job' => $job->id], ['onclick' => 'return confirm("タスクを作成します。よろしいですか？")']) }}
-      </td>
-      <td>
-        全体のPDF
-      </td>
-      <td>
-        {{ link_to_route('pdf.all.deleteall', '全体のPDFをを削除', ['job' => $job->id], ['onclick' => 'return confirm("削除します。よろしいですか？")']) }}
-      </td>
-    </tr>
-    <tr>
-      <td>
         {{ link_to_route('zip.all.make', '全体のZIPファイルを生成', ['job' => $job->id], ['onclick' => 'return confirm("タスクを作成します。よろしいですか？")']) }}
       </td>
       <td>
