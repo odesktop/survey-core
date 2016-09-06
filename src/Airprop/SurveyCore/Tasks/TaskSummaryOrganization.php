@@ -86,6 +86,7 @@ class TaskSummaryOrganization implements TaskInterface
     $jobid   = array_get($params, 'jobid');
     $orgcode = array_get($params, 'orgcode');
 
+
     /** @var SummaryCalculator $calc */
     $calc = app('SummaryCalculator');
     $calc->setJobid($jobid);

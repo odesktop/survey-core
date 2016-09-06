@@ -16,7 +16,10 @@
         ],
         "psr-0": {
             "Airprop\\SurveyCore\\": "src/"
-        }
+        },
+        "files": [
+            "src/helpers.php"
+        ]
     },
     "minimum-stability": "stable"
 }
