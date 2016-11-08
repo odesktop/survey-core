@@ -4,7 +4,7 @@ use Carbon\Carbon;
 use File;
 use Job;
 use Queue;
-use SummaryCalculator;
+use SummaryOverallCalculator;
 use Task;
 
 /**
@@ -72,7 +72,7 @@ class TaskSummaryOverall implements TaskInterface
   {
     $jobid   = array_get($params, 'jobid');
 
-    $calc = new SummaryCalculator;
+    $calc = new SummaryOverallCalculator;
     $calc->setJobid($jobid);
 
     queue_log($queue_job, 'JOB', 'jobid=%s', [$params['jobid']]);

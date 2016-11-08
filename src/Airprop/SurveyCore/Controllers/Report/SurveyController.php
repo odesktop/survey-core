@@ -51,7 +51,6 @@ class SurveyController extends BaseController
     ]);
   }
 
-
   public function show(Job $job)
   {
     $this->layout = View::make('print');
