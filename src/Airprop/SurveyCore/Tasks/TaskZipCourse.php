@@ -74,7 +74,7 @@ class TaskZipCourse implements TaskInterface
       /** @var Job $job */
       $job = Job::where('manaba_jobid', $jobid)->first();
 
-      $outputFilePath = $job->zipFilePath('course');
+      $outputFilePath = $job->courseZipPath();
       $zip = static::zip($outputFilePath);
       queue_log($queue_job, 'ZIP', '%sを作成', [$outputFilePath]);
 

@@ -73,17 +73,17 @@ class TaskZipCourseList implements TaskInterface
       /** @var Job $job */
       $job = Job::where('manaba_jobid', $jobid)->first();
 
-      $outputFilePath = $job->zipFilePath('course-list');
+      $outputFilePath = $job->courseListZipPath();
       $zip = static::zip($outputFilePath);
       queue_log($queue_job, 'ZIP', '%sを作成', [$outputFilePath]);
 
-      $pdfFilePath = $job->pdfDir('course-list.pdf');
+      $pdfFilePath = $job->courseListPdfPath();
       if (!File::exists($pdfFilePath))
       {
         queue_log($queue_job, 'ERROR', '%sは生成されていません', [$pdfFilePath]);
         return;
       }
-      $zip->addFile($pdfFilePath, 'course-list.pdf');
+      $zip->addFile($pdfFilePath, $job->courseListPdfFilename());
       $zip->close();
     } catch (Exception $e) {
       queue_log($queue_job, 'ERROR', $e->getMessage(), '');

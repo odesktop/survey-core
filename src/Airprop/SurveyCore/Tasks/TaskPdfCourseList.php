@@ -76,7 +76,7 @@ class TaskPdfCourseList implements TaskInterface
         ->where('manaba_jobid', $jobid)
         ->first();
 
-      $directory = $job->pdfPath();
+      $directory = $job->pdfDir();
       if (!File::exists($directory))
         File::makeDirectory($directory, 02775, true, true);
 
@@ -89,7 +89,7 @@ class TaskPdfCourseList implements TaskInterface
         ->orderBy('oid', 'asc')
         ->get();
 
-      $filePath =  $job->pdfDir('course-list.pdf');
+      $filePath =  $job->courseListPdfPath();
       foreach ($entries as $i => $course)
       {
         /** @var Course $course */
