@@ -83,7 +83,8 @@ class TaskZipCourseList implements TaskInterface
         queue_log($queue_job, 'ERROR', '%sは生成されていません', [$pdfFilePath]);
         return;
       }
-      $zip->addFile($pdfFilePath, $job->courseListPdfFilename());
+      $filename = mb_convert_encoding($job->courseListPdfFilename(), 'cp932', 'UTF-8');
+      $zip->addFile($pdfFilePath, $filename);
       $zip->close();
     } catch (Exception $e) {
       queue_log($queue_job, 'ERROR', $e->getMessage(), '');
