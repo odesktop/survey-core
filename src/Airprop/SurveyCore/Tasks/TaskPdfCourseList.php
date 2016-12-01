@@ -84,8 +84,8 @@ class TaskPdfCourseList implements TaskInterface
 
       $entries = Course::query()
         ->where('manaba_jobid', $jobid)
-        ->orderBy('nameloc', 'asc')
         ->orderBy('teacher', 'asc')
+        ->orderBy('nameloc', 'asc')
         ->orderBy('oid', 'asc')
         ->get();
 
