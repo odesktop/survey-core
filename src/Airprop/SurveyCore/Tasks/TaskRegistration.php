@@ -26,7 +26,7 @@ class TaskRegistration implements TaskInterface
     File::cleanDirectory($jsonDir);
     File::makeDirectory($jsonDir, 02775, true, true);
 
-    $jobFilePath = base_path('jobs/'.$jobid.'.json');
+    $jobFilePath = storage_path('jobs/'.$jobid.'.json');
     if (!File::exists($jobFilePath))
     {
       throw new Exception('job file "'.$jobFilePath.'" not found.');
