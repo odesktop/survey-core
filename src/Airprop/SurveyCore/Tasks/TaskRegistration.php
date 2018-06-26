@@ -35,7 +35,7 @@ class TaskRegistration implements TaskInterface
 
     foreach ($data['data_url'] as $meta)
     {
-      $path = sprintf('%s/%05d_%s', $jsonDir, $meta['seqno'],basename($meta['url']));
+      $path = sprintf('%s/%05d.json', $jsonDir, $meta['seqno']);
       file_put_contents($path, file_get_contents($meta['url']));
     }
 
