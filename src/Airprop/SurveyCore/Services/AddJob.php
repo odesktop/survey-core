@@ -1,6 +1,7 @@
 <?php namespace Airprop\SurveyCore\Services;
 
 use Airprop\SurveyCore\Tasks\TaskRegistration;
+use Artisan;
 use DB;
 use Exception;
 use File;
@@ -53,6 +54,11 @@ class AddJob extends JobBase
     $taskName = array_get($data, 'task', 'load-json');
     if ($taskName == 'load-json')
     {
+      // job開始前にDBをバックアップしてtruncate
+      Artisan::call('db:backup', [
+        '--truncate' => null,
+      ]);
+
 //      $firstTask = TaskManager::taskGetJson($data['reportid'], $data['jobid'], $urls);
       $firstTask = TaskRegistration::make($data['jobid']);
       TaskManager::taskRegisterTask($data['jobid'], $taskName);
