@@ -54,11 +54,6 @@ class AddJob extends JobBase
     $taskName = array_get($data, 'task', 'load-json');
     if ($taskName == 'load-json')
     {
-      // job開始前にDBをバックアップしてtruncate
-      Artisan::call('db:backup', [
-        '--truncate' => null,
-      ]);
-
 //      $firstTask = TaskManager::taskGetJson($data['reportid'], $data['jobid'], $urls);
       $firstTask = TaskRegistration::make($data['jobid']);
       TaskManager::taskRegisterTask($data['jobid'], $taskName);
@@ -78,6 +73,10 @@ class AddJob extends JobBase
       ->exists();
     if (!$otherTaskExists)
     {
+      // job開始前にDBをバックアップしてtruncate
+      Artisan::call('db:backup', [
+        '--truncate' => null,
+      ]);
       call_user_func($firstTask->callback, $firstTask);
     }
 
